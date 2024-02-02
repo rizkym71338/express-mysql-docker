@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  express:
+    container_name: express
+    build: .
+    env_file:
+      - .env
+    ports:
+      - 3000:3000
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app/src
+        - action: rebuild
+          path: package.json
+    depends_on:
+      - mysql
+      - phpmyadmin
+
+  mysql:
+    platform: linux/x86_64
+    container_name: mysql
+    image: mysql:8
+    env_file:
+      - .env
+    volumes:
+      - mysql:/var/lib/mysql
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin:5.2.1
+    env_file:
+      - .env
+    ports:
+      - 80:80
+
+volumes:
+  mysql:
